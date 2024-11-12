@@ -1,0 +1,18 @@
+certifi==2024.7.4
+charset-normalizer==3.3.2
+exceptiongroup==1.2.2
+idna==3.8
+iniconfig==2.0.0
+lark==1.2.2
+mugrade @ git+https://github.com/dlsyscourse/mugrade.git@656cdc2b7ad5a37e7a5347a7b0405df0acd72380
+numdifftools==0.9.41
+numpy==2.1.0
+packaging==24.1
+pluggy==1.5.0
+pybind11==2.13.5
+pytest==8.3.2
+PyYAML==6.0.2
+requests==2.32.3
+scipy==1.14.1
+tomli==2.0.1
+urllib3==2.2.2

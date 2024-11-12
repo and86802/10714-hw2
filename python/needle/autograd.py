@@ -18,6 +18,7 @@ import numpy as array_api
 NDArray = numpy.ndarray
 
 
+
 class Op:
     """Operator definition."""
 
@@ -187,7 +188,7 @@ class TensorTuple(Value):
 
     def detach(self):
         """Create a new tensor that shares the data but detaches from the graph."""
-        return TensorTuple.make_const(self.realize_cached_data())
+        return Tuple.make_const(self.realize_cached_data())
 
 
 class Tensor(Value):
@@ -358,10 +359,10 @@ class Tensor(Value):
     def transpose(self, axes=None):
         return needle.ops.Transpose(axes)(self)
 
-
     __radd__ = __add__
     __rmul__ = __mul__
-
+    __rsub__ = __sub__
+    __rmatmul__ = __matmul__
 
 
 def compute_gradient_of_variables(output_tensor, out_grad):
@@ -380,7 +381,15 @@ def compute_gradient_of_variables(output_tensor, out_grad):
     reverse_topo_order = list(reversed(find_topo_sort([output_tensor])))
 
     ### BEGIN YOUR SOLUTION
-    raise NotImplementedError()
+    for node_i in reverse_topo_order:
+        adjoint = node_to_output_grads_list[node_i]
+        node_i.grad = sum(adjoint)
+        if node_i.op is None:
+            continue
+        adjoint_ks2i = node_i.op.gradient_as_tuple(node_i.grad, node_i)
+        for node_k, adjoint_k2i in zip(node_i.inputs, adjoint_ks2i):
+            node_to_output_grads_list.setdefault(node_k, list())
+            node_to_output_grads_list[node_k].append(adjoint_k2i)
     ### END YOUR SOLUTION
 
 
@@ -393,14 +402,21 @@ def find_topo_sort(node_list: List[Value]) -> List[Value]:
     sort.
     """
     ### BEGIN YOUR SOLUTION
-    raise NotImplementedError()
+    visited = []
+    topo_order = []
+    topo_sort_dfs(node_list[-1], visited, topo_order)
+    return topo_order
     ### END YOUR SOLUTION
 
 
 def topo_sort_dfs(node, visited, topo_order):
     """Post-order DFS"""
     ### BEGIN YOUR SOLUTION
-    raise NotImplementedError()
+    for input in node.inputs:
+        topo_sort_dfs(input, visited, topo_order)
+    if node not in visited:
+        visited.append(node)
+        topo_order.append(node)
     ### END YOUR SOLUTION
 
 
